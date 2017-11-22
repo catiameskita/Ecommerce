@@ -18,7 +18,9 @@ class Category extends Model{
     }
 
     public function save()
+
     {
+
         $sql = new Sql();
 
         $results = $sql->select("CALL sp_categories_save(:idcategory, :descategory)", array(
@@ -27,6 +29,8 @@ class Category extends Model{
         ));
 
         $this->setData($results[0]);
+
+        Category::updateFile();
 
     }
 
@@ -46,12 +50,29 @@ class Category extends Model{
 
     public function delete()
     {
+
         $sql = new Sql();
 
         $sql->query("DELETE FROM tb_categories WHERE idcategory = :idcategory", [
            ':idcategory' =>$this->getidcategory()
         ]);
 
+        Category::updateFile();
+    }
+
+    public static function updateFile()
+    {
+        $categories = Category::listAll();
+
+        $html =[];
+
+        foreach ($categories as $row)
+        {
+            array_push($html, '<li><a href="/categories/'.$row['idcategory'].'">'.$row['descategory'].'</a></li>');
+        }
+        //implode ->string para array
+        //explode -> array para string
+        file_put_contents($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR. "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode('', $html));
 
     }
 
