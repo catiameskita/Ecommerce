@@ -16,7 +16,7 @@ class Product extends Model{
 
     }
 
-    public static function checklist($list)
+    public static function checkList($list)
     {
 
         foreach($list as &$row){
