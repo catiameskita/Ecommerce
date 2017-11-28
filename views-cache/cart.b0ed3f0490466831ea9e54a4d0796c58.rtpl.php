@@ -50,7 +50,7 @@
                                         </td>
 
                                         <td class="product-name">
-                                            <a href="/products/<?php echo htmlspecialchars( $value1["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>">{$value.desproduct</a>
+                                            <a href="/products/<?php echo htmlspecialchars( $value1["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value1["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></a>
                                         </td>
 
                                         <td class="product-price">
@@ -82,9 +82,9 @@
                                     <h2>Cálculo de Frete</h2>
                                     
                                     <div class="coupon">
-                                        <label for="cep">CEP:</label>
+                                        <label for="cep">Código Postal:</label>
                                         <input type="text" placeholder="00000-000" value="" id="cep" class="input-text" name="zipcode">
-                                        <input type="submit" formmethod="post" formaction="/cart/freight" value="CÁLCULAR" class="button">
+                                        <input type="submit" formmethod="post" formaction="/cart/freight" value="CALCULAR" class="button">
                                     </div>
 
                                 </div>

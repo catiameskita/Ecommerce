@@ -182,4 +182,72 @@ class Cart extends Model{
         return Product::checkList($rows);
     }
 
+    public function getProductsTotals()
+    {
+
+        $sql = new Sql();
+
+        $results = $sql->select("SELECT SUM(vlprice) as vlprice, SUM(vlwidth) as vlwidth, SUM(vlheight) as vlheight, SUM(vllength)as vllength, SUM(vlweight) as vlweight, COUNT(*) AS nrqtd
+                       FROM tb_products a 
+                       INNER JOIN tb_cartsproducts b ON a.idproduct = b.idproduct
+                       WHERE b.idcart = :idcart
+                       AND dtremoved IS NULL;",
+                [
+
+                ':idcart' =>$this->getidcart()
+
+                 ]);
+
+        if(count($results) > 0)
+        {
+            return $results[0];
+        }else{
+            return [];
+        }
+
+
+    }
+
+    public function setFreight($nrzipcode)
+    {
+
+        $nrzipcode = str_replace("-", " ", $nrzipcode);
+
+        $totals = $this->getProductsTotals();
+
+        if ($totals['nrqtd'] >0 ){
+
+            if($totals['vlheight']<2) $totals['vlheight']==2;
+            if($totals['vlheight']<16) $totals['vlheight']==16;
+            //querystring
+            $qs = http_build_query([
+                        'nCdEmpresa' => '',
+                        'sDsSenha' => '',
+                        'nCdServico' => '40010',
+                        'sCepOrigem' => '09853120',
+                        'sCepDestino' => $nrzipcode,
+                        'nVlPeso' => $totals['vlweight'],
+                        'nCdFormato' =>'1',
+                        'nVlComprimento' => $totals['vllength'],
+                        'nVlAltura' => $totals['vlheight'],
+                        'nVlLargura' => $totals['vlwidth'],
+                        'nVlDiametro' => '0',
+                        'sCdMaoPropria' => 'S',
+                        'nVlValorDeclarado' => $totals['vlprice'],
+                        'sCdAvisoRecebimento' => 'S'
+            ]);
+
+           $xml = (array)simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx?".$qs);
+            var_dump($xml);
+            exit;
+
+        }else{
+
+
+
+        }
+
+
+    }
+
 }
