@@ -11,7 +11,7 @@ class Mailer{
 
     const USERNAME = "sofiadurao3@gmail.com";
     const PASSWORD = "senhateste";
-    const NAME_FROM = "Sofia Durão";
+    const NAME_FROM = "Sofia Durao";
 
     private $mail;
 

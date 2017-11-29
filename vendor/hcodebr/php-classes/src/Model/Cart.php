@@ -218,8 +218,9 @@ class Cart extends Model{
         if ($totals['nrqtd'] >0 ){
 
             if($totals['vlheight']<2) $totals['vlheight']==2;
-            if($totals['vlheight']<16) $totals['vlheight']==16;
+            if($totals['vllength']<16) $totals['vllength']==16;
             //querystring
+            //Generate URL-encoded query string
             $qs = http_build_query([
                         'nCdEmpresa' => '',
                         'sDsSenha' => '',
@@ -237,9 +238,9 @@ class Cart extends Model{
                         'sCdAvisoRecebimento' => 'S'
             ]);
 
+            //simplexml_load_file -Interprets an XML file into an object
            $xml = (array)simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx?".$qs);
-            var_dump($xml);
-            exit;
+           echo json_encode($xml);
 
         }else{
 
