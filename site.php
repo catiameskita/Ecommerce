@@ -70,9 +70,11 @@ $app->get("/cart", function(){
 
     $cart = Cart::getFromSession();
     $page = new Page();
+
     $page->setTpl("cart", [
         'cart' =>$cart->getValues(),
-        'product' =>$cart->getProducts()
+        'products' =>$cart->getProducts(),
+        'error' =>Cart::getMsgError()
     ]);
 
 
@@ -133,6 +135,7 @@ $app->post("/cart/freight", function(){
 });
 
 $app->get("/checkout", function(){
+
     User::verifyLogin(false);
     $cart = Cart::getFromSession();
     $address = new Address();
@@ -149,8 +152,12 @@ $app->get("/login", function(){
 
     $page = new Page();
     $page->setTpl("login", [
-        'error' =>User::getError()
+        'error' =>User::getError(),
+        'errorRegister' =>User::getErrorRegister(),
+        'registerValues' => (isset($_SESSION['registerValues'])) ?   $_SESSION['registerValues'] : ['name' => '', 'email' => '', 'phone' =>'']
     ]);
+    //Cá está a busca dos valores de um registo; no register values;
+
 
 });
 
@@ -176,5 +183,61 @@ $app->get("/logout", function(){
 
     header("Location: /login");
     exit;
+
+});
+
+$app->post("/register", function (){
+    //Guarda os valores do registo de alguém, caso dê um erro quando se está a preencher o registo, depois os valores anteriormente preenchidos são colocados no formulário
+    $_SESSION['registerValues'] = $_POST;
+    //Validação, para obrigar a pessoa a escrever estes parâmetros, nesta caso o nome
+    if( !isset($_POST['name'])|| $_POST['name'] == ''){
+
+        User::setErrorRegister("Preencha o seu nome!");
+        header("Location: /login");
+        exit;
+    }
+
+    //validação para o email
+    if( !isset($_POST['email'])|| $_POST['email'] == ''){
+
+        User::setErrorRegister("Preencha o seu email!");
+        header("Location: /login");
+        exit;
+    }
+
+    //validação para a senha
+    if( !isset($_POST['password'])|| $_POST['password'] == ''){
+
+        User::setErrorRegister("Preencha a sua senha!");
+        header("Location: /login");
+        exit;
+    }
+    //validação se existe um login igual, não deixa
+
+    if(User::checkLoginExist($_POST['email'])=== true){
+
+        User::setErrorRegister("Este endereço de email já existe");
+        header("Location: /login");
+        exit;
+    }
+
+   $user = new User();
+
+   $user->setData([
+       'inadmin' => 0,
+       'deslogin' => $_POST['email'],
+       'desperson' => $_POST['name'],
+       'desemail' => $_POST['email'],
+       'despassword' => $_POST['password'],
+       'nrphone' => $_POST['phone'],
+
+   ]);
+
+   $user->save();
+
+   User::login($_POST['email'], $_POST['password']);
+
+   header("Location: /checkout");
+   exit;
 
 });
