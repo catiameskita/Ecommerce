@@ -143,6 +143,11 @@ $app->get("/checkout", function(){
     $cart = Cart::getFromSession();
 
     if(isset($_GET['zipcode'])){
+        $_GET['zipcode'] = $cart->getdeszipcode();
+    }
+
+
+    if(isset($_GET['zipcode'])){
 
         $address->loadFromCEP($_GET['zipcode']);
 
@@ -153,17 +158,86 @@ $app->get("/checkout", function(){
         $cart->getCalculateTotal();
     }
 
+    if(!$address->getdesaddress()) $address->setdesaddress('');
+    if(!$address->getdescomplement()) $address->setdescomplement('');
+    if(!$address->getdesdistrict()) $address->setdesdistrict('');
+    if(!$address->getdescity()) $address->setdescity('');
+    if(!$address->getdesstate()) $address->setdesstate('');
+    if(!$address->getdescountry()) $address->setdescountry('');
+    if(!$address->getdeszipcode()) $address->setdeszipcode('');
+
     $page = new Page();
     $page->setTpl("checkout", [
 
         'cart' => $cart->getValues(),
-        'address' =>$address->getValues()
+        'address' =>$address->getValues(),
+        'products' => $cart->getProducts(),
+        'error' =>Address::getMsgError()
     ]);
 
 });
 
 $app->post("/checkout", function(){
 
+    User::verifyLogin(false);
+
+    if(!isset($_POST['zipcode']) || $_POST['zipcode']===''){
+
+        Address::setMsgError("Digite o CEP.");
+        header("Location: /checkout");
+        exit;
+    }
+
+    if(!isset($_POST['desaddress']) || $_POST['desaddress']===''){
+
+        Address::setMsgError("Digite o Endereço.");
+        header("Location: /checkout");
+        exit;
+    }
+
+    if(!isset($_POST['desdistrict']) || $_POST['desdistrict']===''){
+
+        Address::setMsgError("Digite o Distrito.");
+        header("Location: /checkout");
+        exit;
+    }
+
+    if(!isset($_POST['descity']) || $_POST['descity']===''){
+
+        Address::setMsgError("Digite a Cidade.");
+        header("Location: /checkout");
+        exit;
+    }
+
+    if(!isset($_POST['desstate']) || $_POST['desstate']===''){
+
+        Address::setMsgError("Digite o Estado.");
+        header("Location: /checkout");
+        exit;
+    }
+
+    if(!isset($_POST['descountry']) || $_POST['descountry']===''){
+
+        Address::setMsgError("Digite o País.");
+        header("Location: /checkout");
+        exit;
+    }
+
+
+
+    $user = User::getFromSession();
+
+    $address = new Address();
+
+    $_POST['deszipcode'] = $_POST['zipcode'];
+    $_POST['idperson'] = $user->getidperson();
+
+    $address->setData($_POST);
+
+    $address->save();
+
+    header("Location: /order");
+    exit;
 
 
 });
