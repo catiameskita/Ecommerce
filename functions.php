@@ -25,8 +25,8 @@ function checkLogin($inadmin)
 function getUserName()
 {
     $user = User::getFromSession();
-   // var_dump($user);
-    //return $user->getdesperson();
-    return $user->getdeslogin();
+    return $user->getdesperson();
+
+    //return $user->getdeslogin();
 
 }

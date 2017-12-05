@@ -61,9 +61,12 @@ class User extends Model{
 
         $sql = new Sql();
 
-        $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
+        $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b 
+                                       ON a.idperson = b.idperson WHERE a.deslogin = :LOGIN");
+
+        /*$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
            ":LOGIN" => $login
-        ));
+        ));*/
 
         if(count($results)===0){
 
@@ -74,14 +77,15 @@ class User extends Model{
         $data = $results[0];
 
 
+
         //@return boolean Returns TRUE if the password and hash match, or FALSE otherwise
         //password_verify returns true or false
         //is comparing the parameter password received with the hash on the DB
         if(password_verify($password, $data["despassword"])===true)
         {
             $user = new User();
-
-            $data['desperson']=utf8_encode($data['desperson']);
+            //TODO: COMENTado o login funciona, não comentado dá erro no desperson
+          $data['desperson']=utf8_encode($data['desperson']);
 
             $user->setData($data);
 
@@ -132,8 +136,8 @@ class User extends Model{
 
     }
 
-//################acrescentei o parâmetro $data##############
-    public function get($iduser, $data = true)
+
+    public function get($iduser)
     {
         $sql = new Sql();
 
@@ -141,6 +145,8 @@ class User extends Model{
             array(
                 ":IDUSER" => $iduser
             ));
+        //TODO: acrescentei
+        $data = $results[0];
 
         $data['desperson']=utf8_encode($data['desperson']);
 
@@ -261,6 +267,11 @@ class User extends Model{
     {
         $idRecovery = (int)mcrypt_decrypt(MCRYPT_RIJNDAEL_128, User::SECRET, base64_decode($code), MCRYPT_MODE_ECB);
 
+        var_dump($code);
+        echo "<br>";
+        var_dump($idRecovery);
+
+
         $sql = new Sql();
 
         $results = $sql->select("
@@ -276,8 +287,6 @@ class User extends Model{
                     DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();", array(
             ":idrecovery" => $idRecovery
         ));
-        var_dump($results);
-
 
         if (count($results) === 0) {
 
