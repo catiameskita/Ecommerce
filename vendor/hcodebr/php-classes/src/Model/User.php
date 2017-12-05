@@ -13,6 +13,7 @@ class User extends Model{
     const SECRET = "hcodephp7_secret";
     const ERROR = "UserError";
     const ERROR_REGISTER = "UserErrorRegister";
+    const SUCCESS = "UserSuccess";
 
     public static function getFromSession()
     {
@@ -61,10 +62,10 @@ class User extends Model{
 
         $sql = new Sql();
 
-        $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b 
+       $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b
                                        ON a.idperson = b.idperson WHERE a.deslogin = :LOGIN");
 
-        /*$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
+       /* $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
            ":LOGIN" => $login
         ));*/
 
@@ -381,6 +382,24 @@ class User extends Model{
 
 
         }
+
+    public static function setSuccess($msg){
+
+        $_SESSION[User::SUCCESS] = $msg;
+
+    }
+
+    public static function getSuccess(){
+
+        $msg = (isset( $_SESSION[User::SUCCESS])&&$_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS]: '';
+        User::clearSuccess();
+        return $msg;
+    }
+
+    public static function clearSuccess()
+    {
+        $_SESSION[User::SUCCESS] = NULL;
+    }
 
 
 
