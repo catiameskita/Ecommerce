@@ -137,14 +137,34 @@ $app->post("/cart/freight", function(){
 $app->get("/checkout", function(){
 
     User::verifyLogin(false);
-    $cart = Cart::getFromSession();
+
     $address = new Address();
+
+    $cart = Cart::getFromSession();
+
+    if(isset($_GET['zipcode'])){
+
+        $address->loadFromCEP($_GET['zipcode']);
+
+        $cart->setdeszipcode($_GET['zipcode']);
+
+        $cart->save();
+
+        $cart->getCalculateTotal();
+    }
+
     $page = new Page();
     $page->setTpl("checkout", [
 
         'cart' => $cart->getValues(),
         'address' =>$address->getValues()
     ]);
+
+});
+
+$app->post("/checkout", function(){
+
+
 
 });
 
@@ -189,7 +209,7 @@ $app->get("/logout", function(){
 $app->post("/register", function (){
     //Guarda os valores do registo de alguém, caso dê um erro quando se está a preencher o registo, depois os valores anteriormente preenchidos são colocados no formulário
     $_SESSION['registerValues'] = $_POST;
-    //Validação, para obrigar a pessoa a escrever estes parâmetros, nesta caso o nome
+    //Validação, para obrigar a pessoa a escrever estes parâmetros, neste caso o nome
     if( !isset($_POST['name'])|| $_POST['name'] == ''){
 
         User::setErrorRegister("Preencha o seu nome!");
@@ -352,8 +372,6 @@ $app->post("/profile", function(){
            exit;
        }
     }
-
-
 
     $_POST['inadmin'] = $user->getinadmin();
     $_POST['despassword'] = $user->getdespassword();
