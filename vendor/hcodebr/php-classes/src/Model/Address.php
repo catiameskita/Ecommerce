@@ -54,7 +54,7 @@ class Address extends Model{
             $this->setdesdistrict($data['bairro']);
             $this->setdescity($data['localidade']);
             $this->setdesstate($data['uf']);
-            $this->setdescountry($data['Brasil']);
+            $this->setdescountry('Brasil');
             $this->setdeszipcode($nrCep);
 
         }
