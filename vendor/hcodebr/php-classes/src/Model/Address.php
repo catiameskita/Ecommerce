@@ -18,13 +18,10 @@ class Address extends Model{
         //Initialize a cURL session
         $ch = curl_init();
 
-        Echo "Primeiro<br>";
-        var_dump($ch);
-        Echo"<br>";
 
         //Set an option for a cURL transfer, @param resource $ch
 
-        curl_setopt($ch, CURLOPT_URL, " http://viacep.com.br/ws/$nrcep/json/");
+        curl_setopt($ch, CURLOPT_URL, "http://viacep.com.br/ws/$nrcep/json/");
 
         //esperando que haja retorno
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -32,22 +29,14 @@ class Address extends Model{
         //não é exigido autenticação SSL
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , false);
 
-        Echo"Segundo<br>";
-        var_dump($ch);
-        Echo"<br>";
 
         //Decodes a JSON string
         //curl_exec - @return mixed true on success or false on failure. However, if the CURLOPT_RETURNTRANSFER
         //option is set, it will return the result on success, false on failure.
 
-        //$data = json_decode(curl_exec($ch), true);
-        $data = curl_exec($ch);
+        $data = json_decode(curl_exec($ch), true);
 
         curl_close ($ch);
-
-        Echo"Terceiro<br>";
-        var_dump($data);
-
 
         return $data;
 
