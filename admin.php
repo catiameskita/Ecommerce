@@ -124,15 +124,3 @@ $app->get("/admin/forgot/reset", function(){
 
 });
 
-$app->get("/admin/categories", function(){
-
-    User::verifyLogin();
-
-    $categories = Category::listAll();
-    $page = new PageAdmin();
-
-    $page->setTpl("categories", [
-        'categories' => $categories
-    ]);
-
-});
