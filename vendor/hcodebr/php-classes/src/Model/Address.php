@@ -65,7 +65,7 @@ public function save(){
 
         $sql = new Sql();
 
-        $results = $sql->select("CALL sp_addresses_save(:idaddress, :idperson, :desaddress, :desnumber
+        $results = $sql->select("CALL sp_addresses_save(:idaddress, :idperson, :desaddress, :desnumber,
                                         :descomplement, :descity, :desstate, :descountry, :deszipcode, :desdistrict)", [
 
                                             'idaddress' => $this->getidaddress(),
